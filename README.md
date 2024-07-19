@@ -192,3 +192,55 @@ u8 foo[40];
 
 str.fill(foo, 'A', size(foo)); // foo = "AAAA...\0" (Note: str.fill appends a null byte)
 ```
+
+### str.copy
+**Alternative to `strcpy`:** Copies the characters from one string to another.
+**Arguments:** `(u8 *, u8, size_t, u8 *, i1)`  
+**Return:** `u32` aka `uint32_t`
+
+Usage examples:
+```
+u8 foo[40] = "";
+u8 foo2[100] = "Normal string";
+
+str.copy(foo, size(foo), foo2, true); // 0
+```
+
+#### What does the 4th argument mean?
+*It determines how the copying is handled if the second string is larger than the first.*
+**True**: If the second string is larger, copy half of it.
+**False**: Only copy the string if the first one can fully accommodate the second one.
+
+Let's see:
+```
+u8 foo[10] = "";
+u8 foo2[] = "I am using Dstring!";
+
+str.copy(foo, size(foo), foo2, true); // 0
+// foo now equals "I am usin"
+
+str.copy(foo, size(foo), foo2, false); // 2
+// foo remains empty because it's smaller than foo2
+```
+```
+str.copy(NULL, 5, NULL, true); // 1
+```
+
+### str.set
+**Alternative to `strcpy`:** Copies the characters from one string to another, but resets the first string beforehand.
+**Arguments:** `(u8 *, u8, size_t, u8 *, i1)`  
+**Return:** `u32` aka `uint32_t`
+
+Usage examples:
+```
+u8 foo[15] = "Test";
+u8 foo2[15] = "Ok";
+
+strcpy(foo, foo2); // foo = "Ok\0t"
+
+str.copy(foo, size(foo), foo2, true); // foo = "Ok\0t"
+// Note that the 4th character remains in the string.
+
+str.set(foo, size(foo), foo2, true); // foo = "Ok"
+// This function resets the first string before copying.
+```
